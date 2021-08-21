@@ -64,7 +64,7 @@ bbox(WAW) ; ncol(WAW) ; nrow(WAW) ; res(WAW)
 ## Modifier les variables
 
 # CLC
-#Resolution (100 -> 1000) + extent (pour correspondre à DP)
+#Resolution (100 -> 1000) + extent (pour correspondre Ã  DP)
 
 CLC1 <- projectRaster(CLC,DP,method="ngb")
 #check
@@ -74,8 +74,8 @@ bbox(CLC1) ; ncol(CLC1) ; nrow(CLC1) ; res(CLC1)
 
 # DP 
 #projection = LAEA
-#résolution = pixel de 1km^2
-#étendue de référence 
+#rÃ©solution = pixel de 1km^2
+#Ã©tendue de rÃ©fÃ©rence 
 
 
 # ELEV
@@ -86,7 +86,7 @@ ELEV <- projectRaster(ELEV,crs="+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0
 projection(ELEV)
 bbox(ELEV) ; ncol(ELEV) ; nrow(ELEV) ; res(ELEV)
 
-#Changement de résolution et d'étendue
+#Changement de rÃ©solution et d'Ã©tendue
 
 ELEV2<-resample(ELEV,DP, method="bilinear")
 #check
@@ -95,7 +95,7 @@ bbox(ELEV2) ; ncol(ELEV2) ; nrow(ELEV2) ; res(ELEV2)
 
 
 # N2K
-#Changement d'étendue
+#Changement d'Ã©tendue
 
 N2K1<-projectRaster(N2K,DP,method="ngb")
 #check
@@ -104,7 +104,7 @@ bbox(N2K1) ; ncol(N2K1) ; nrow(N2K1) ; res(N2K1)
 
 
 # WAW
-#Changement de résolution et d'étendue
+#Changement de rÃ©solution et d'Ã©tendue
 
 WAW1<- projectRaster(WAW,DP,method="ngb")
 #check
@@ -126,14 +126,14 @@ plot(WAW1, main="Water and wetness")
 variables.stack <- stack(CLC1,DP,ELEV2,WAW1,N2K1)
 
 
-# Données d'espèces
+# DonnÃ©es d'espÃ¨ces
 # Importer le dataset
 
 circus <- read_csv("circus/test.csv", col_types = cols(CA = col_double(), CC = col_double(), CP = col_double(), DATE = col_number()))
 summary(circus)
 
 
-# Definir un data set par espèce
+# Definir un data set par espÃ¨ce
 CA = *Circus aeruginosus*
   CC = *Circus cyaneus*
   CP = *Circus pygargus*
@@ -150,10 +150,10 @@ summary(CC)
 summary(CP)
 
 ##-----------------------------------------------------------------------------------------------------------------------------------------------------------------------##
-##Pour le reste du scripte le C. aeruginosus servira d'exemple (pour obtenir les infos correspondantes des autres espèces, il suffit de remplacer "CA" par "CC" ou "CP").##
+##Pour le reste du scripte le C. aeruginosus servira d'exemple (pour obtenir les infos correspondantes des autres espÃ¨ces, il suffit de remplacer "CA" par "CC" ou "CP").##
 ##-----------------------------------------------------------------------------------------------------------------------------------------------------------------------##
 
-# Définir l'objects comme "spatial"
+# DÃ©finir l'objects comme objet gÃ©ographique
 
 colnames(CA) <- c("CAX","CAY")
 coordinates(CA)<-c("CAX","CAY")
@@ -164,21 +164,21 @@ coordinates(CA)<-c("CAX","CAY")
 projection(CA) <- "+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +units=m +no_defs"
 
 
-# Exctraction des donnée environnementales
+# Exctraction des donnÃ©e environnementales
 
 pts.env.CA <- extract(variables.stack, CA)
 CA.env <- na.omit(data.frame(cbind(coordinates(CA),pts.env.CA)))
 
 
-# enregistrer les résultats
+# enregistrer les rÃ©sultats
 
 write.table(CA.env,file="CAenv.csv",col.names = TRUE ,sep = ";")
 
 
 ################################################################
-## Analyses descriptives de variables environnemantales mixes ##
+## Analyses descriptives de variables environnemantales mixtes ##
 
-# Preparation
+# PrÃ©paration
 
 v1 <- subset(variables.stack,1)
 e <- extent(v1)
@@ -196,7 +196,7 @@ PV <- extract(variables.stack,backgroundPoint)
 PV <- na.omit(data.frame(cbind(coordinates(backgroundPoint),PV)))
 
 
-## Analyse univariée 
+## Analyse univariÃ©e 
 
 PV1<- PV
 PV1$CLC <- as.character(PV1$CLC)
@@ -205,26 +205,26 @@ PV1$N2K <- as.character(PV1$N2K)
 summary(PV1)
 
 #DP
-hist(PV1$DP,main="Histogramme de la densité de population humaine", xlab="Densité de population (individus/km²)")
-hist(log10(PV1$DP),main="Histogramme de la densité 
-de population humaine", xlab="Densité de population (individus/km²)")
+hist(PV1$DP,main="Histogramme de la densitÃ© de population humaine", xlab="DensitÃ© de population (individus/kmÂ²)")
+hist(log10(PV1$DP),main="Histogramme de la densitÃ© 
+de population humaine", xlab="DensitÃ© de population (individus/kmÂ²)")
 
 #ELEV
 hist(PV1$ELEV,main="Histogramme de l'altitude", xlab="Altitude (m)")
 
 #CLC
 sort(table(PV1$CLC), decreasing = TRUE)
-barplot(sort(table(PV1$CLC), decreasing = TRUE),main="Histogramme de l'occupation du sol", xlab="Catégorie d'occupation du sol")
+barplot(sort(table(PV1$CLC), decreasing = TRUE),main="Histogramme de l'occupation du sol", xlab="CatÃ©gorie d'occupation du sol")
 
 #WAW
 sort(table(PV1$WAW), decreasing = TRUE)
-barplot(sort(table(PV1$WAW), decreasing = TRUE),main="Histogramme des niveaux d'humidité", xlab="Niveaux d'humidité")
+barplot(sort(table(PV1$WAW), decreasing = TRUE),main="Histogramme des niveaux d'humiditÃ©", xlab="Niveaux d'humiditÃ©")
 
 #N2K
 table(PV1$N2K)
 
 
-## Analyse bivariée
+## Analyse bivariÃ©e
 
 library("dplyr")
 library(tidyverse)
@@ -232,7 +232,7 @@ require(tidyverse)
 require(rcompanion)
 
 
-# Trié les variables
+# TriÃ© les variables
 
 data.cor <- PV
 data.cor$CLC <- as.factor(data.cor$CLC)
@@ -289,15 +289,15 @@ mixed_assoc = function(df, cor_method="spearman", adjust_cramersv_bias=TRUE){
 
 
 
-# test de corrélation
+# test de corrÃ©lation
 correlations_test <- mixed_assoc(data.cor[,-c(1:2)])
 write.table(correlations_test, file="correlation-test.csv",col.names = TRUE , 
             row.names = TRUE, sep = ";",dec=".")
 
 ###################################################################################
-## Analyses descriptives des variables environnementales en fonction des espèces ##
+## Analyses descriptives des variables environnementales en fonction des espÃ¨ces ##
 
-## Aanalyses univariées
+## Aanalyses univariÃ©es
 
 CA.env$CLC <- as.character(CA.env$CLC)
 CA.env$WAW <- as.character(CA.env$WAW)
@@ -305,7 +305,7 @@ CA.env$N2K <- as.character(CA.env$N2K)
 summary(CA.env)
 
 #DP
-hist(CA.env$DP,main="Histogramme de la densité de population humaine", xlab="Densité de population (individus/km²)")
+hist(CA.env$DP,main="Histogramme de la densitÃ© de population humaine", xlab="DensitÃ© de population (individus/kmÂ²)")
 hist(log(CA.env$DP))
 
 #ELEV
@@ -313,17 +313,17 @@ hist(CA.env$ELEV,main="Histogramme de l'altitude", xlab="Altitude (m)")
 
 #CLC
 sort(table(CA.env$CLC), decreasing = TRUE)
-barplot(sort(table(CA.env$CLC), decreasing = TRUE),main="Histogramme de l'occupation du sol", xlab="Catégorie d'occupation du sol")
+barplot(sort(table(CA.env$CLC), decreasing = TRUE),main="Histogramme de l'occupation du sol", xlab="CatÃ©gorie d'occupation du sol")
 
 #WAW
 sort(table(CA.env$WAW), decreasing = TRUE)
-barplot(sort(table(CA.env$WAW), decreasing = TRUE),main="Histogramme des niveaux d'humidité", xlab="Niveaux d'humidité")
+barplot(sort(table(CA.env$WAW), decreasing = TRUE),main="Histogramme des niveaux d'humiditÃ©", xlab="Niveaux d'humiditÃ©")
 
 #N2K
 table(CA.env$N2K)
 
 
-## Analyses bivariées
+## Analyses bivariÃ©es
 
 shapiro.test(PV$DP)
 shapiro.test(CA.env$DP)
@@ -339,8 +339,8 @@ st_DP_CP_CA<-t.test(CP.env$DP,CA.env$DP,alternative = "less",
 
 pvaleursDP<- c(st_DP_PV_CA$p.value, st_DP_CA_CC$p.value,st_DP_CP_CA$p.value) 
 names(pvaleursDP) <- c(" PV-CA ", "CA-CC","CP-CA") 
-pvaleurs_corrigéesDP <- p.adjust(pvaleursDP, method="bonferroni") 
-cbind(pvaleursDP, pvaleurs_corrigéesDP) 
+pvaleurs_corrigÃ©esDP <- p.adjust(pvaleursDP, method="bonferroni") 
+cbind(pvaleursDP, pvaleurs_corrigÃ©esDP) 
 
 shapiro.test(PV$ELEV)
 shapiro.test(CA.env$ELEV)
@@ -356,8 +356,8 @@ st_ELV_CP_CA<-t.test(CP.env$ELEV,CA.env$ELEV,alternative = "greater",
 
 pvaleursELV<- c(st_ELV_PV_CA$p.value,st_ELV_CA_CC$p.value,st_ELV_CP_CA$p.value) 
 names(pvaleursELV) <- c(" PV-CA ","CA-CC","CP-CA") 
-pvaleurs_corrigéesELV <- p.adjust(pvaleursELV, method="bonferroni") 
-cbind(pvaleursELV, pvaleurs_corrigéesELV)
+pvaleurs_corrigÃ©esELV <- p.adjust(pvaleursELV, method="bonferroni") 
+cbind(pvaleursELV, pvaleurs_corrigÃ©esELV)
 
 ############################
 ## Analyses exploratoires ##
@@ -383,7 +383,7 @@ plot.MFA(res.MFA.CA,choix="ind",lab.par=FALSE,invisible= c('quali','quali.sup'),
          select='cos2 0.999999',title="Graphe des individus",
          cex=1.5,cex.main=1.3,cex.axis=1.5)
 plot.MFA(res.MFA.CA, choix="var",habillage='group',
-         title="Cercle des corrélations",invisible= c('quanti.sup'))
+         title="Cercle des corrÃ©lations",invisible= c('quanti.sup'))
 plot.MFA(res.MFA.CA, choix="group",invisible = c('quanti.sup'),
          title="Graphe des groupes")
 plot.MFA(res.MFA.CA, choix="ind",lab.par=FALSE,invisible= c('ind','quali.sup'),
@@ -396,7 +396,7 @@ plot.MFA(res.MFA.CA, choix="ind",lab.par=FALSE,invisible= c('ind','quali.sup'),
 
 ##########################
 ## Analyses predictives ##
-Préparation des variables environnementales 
+PrÃ©paration des variables environnementales 
 * Charger les raster
 
 CLC.m <- raster("env/CLC.tif")
@@ -406,7 +406,7 @@ N2K.m <- raster("env/N2K.tif")
 WAW.m <- raster("env/WAW.tif")
 
 
-# Modifier les catégories selon l'annexe ??? (Quelques exemples parmis les 47 modifications apportées)
+# Modifier les catÃ©gories selon l'annexe ??? (Quelques exemples parmis les 47 modifications apportÃ©es)
 
 CLC.m[values(CLC.m)==2]<-1
 CLC.m[values(CLC.m)==10]<-1
@@ -415,7 +415,7 @@ CLC.m[values(CLC.m)==7]<-3
 WAW.m[values(WAW.m)==4]<-1
 
 
-# Assigner les même emprises et les mêmes SCR
+# Assigner les mÃªme emprises et les mÃªmes SCR
 
 ELEV.m1<- projectRaster(ELEV.m,crs = crs(DP.m))
 ELEV.m2<- resample(ELEV.m1,DP.m, method="bilinear")
@@ -424,7 +424,7 @@ WAW.m1<- resample(WAW.m,DP.m,method="ngb")
 CLC.m1 <- resample(CLC.m,DP.m,method="ngb")
 
 
-# Signaler les variables catégorielles et empiler les cartes
+# Signaler les variables catÃ©gorielles et empiler les cartes
 
 values(N2K.m1) = as.factor(round(values(N2K.m1))) 
 values(WAW.m1) = as.factor(round(values(WAW.m1)))
@@ -432,29 +432,29 @@ values(CLC.m2) = as.factor(round(values(CLC.m2)))
 variables.stack.m <- stack(CLC.m1,DP.m,ELEV.m2,WAW.m1,N2K.m1)
 
 
-# Préparation des données d'espèce et de biomod2
+# PrÃ©paration des donnÃ©es d'espÃ¨ce et de biomod2
 
 circus <- read.csv("circus/test.csv", h=T)
 DataSpecies_CA <- as.data.frame(circus[c(1:533),c(1:2,5)])
 head(DataSpecies_CA) # nom de l especee 
-myRespName_CA <- 'CA' # DonnÃ©es présences/ absences de l espéce (0/1) 
-myResp_CA <- as.numeric(DataSpecies_CA[,myRespName_CA]) #Les coordonnÃ©es des occurences 
+myRespName_CA <- 'CA' # DonnÃƒÂ©es prÃ©sences/ absences de l espÃ©ce (0/1) 
+myResp_CA <- as.numeric(DataSpecies_CA[,myRespName_CA]) #Les coordonnÃƒÂ©es des occurences 
 myRespXY_CA <- DataSpecies_CA[,c("X","Y")]
 myExpl = variables.stack.m
 
 
-# Formater les données
+# Formater les donnÃ©es
 
 myBiomodData_CA <- BIOMOD_FormatingData(resp.var = myResp_CA, 
                                         expl.var = myExpl, # le stack des couches de variables 
                                         PA.nb.rep = 1, # pseudo-absences? (O=non, 1=oui) 
                                         PA.nb.absences = 2000,# nombre de pseudo-absences 
                                         PA.strategy = 'random', 
-                                        resp.xy = myRespXY_CA, # les donnéees d occurences 
+                                        resp.xy = myRespXY_CA, # les donnÃ©ees d occurences 
                                         resp.name = myRespName_CA)
 
 
-# Biomod option : par défaut
+# Biomod option : par dÃ©faut
 
 myBiomodOption <- BIOMOD_ModelingOptions() 
 
@@ -492,7 +492,7 @@ myBiomodEM_CA <- BIOMOD_EnsembleModeling(modeling.output = myBiomodModelOut_CA,
                                          prob.mean.weight.decay = 'proportional' )
 
 evalAss_CA <- get_evaluations(myBiomodEM_CA)[[1]]
-evalAss_CA #permet de connaître le cutoff pour binariser les résultat finaux
+evalAss_CA #permet de connaÃ®tre le cutoff pour binariser les rÃ©sultat finaux
 
 
 # Store the evaluation outputs
@@ -504,7 +504,7 @@ write.table(evalAss_CA,paste0(spName,"_eval_assemble.txt"),sep="\t",row.names=T)
 write.table(VarImport_CA,paste0(spName,"_varImport.txt"),sep="\t",row.names=T)
 
 
-# Courbes de réponses des variables environnementales par modèle
+# Courbes de rÃ©ponses des variables environnementales par modÃ¨le
 
 CA_glm <- BIOMOD_LoadModels(myBiomodModelOut_CA,models='GLM')
 CA_rf <- BIOMOD_LoadModels(myBiomodModelOut_CA,models='RF')
