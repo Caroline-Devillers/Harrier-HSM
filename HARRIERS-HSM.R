@@ -134,9 +134,9 @@ summary(circus)
 
 
 # Definir un data set par espèce
-CA = *Circus aeruginosus*
-  CC = *Circus cyaneus*
-  CP = *Circus pygargus*
+#CA = Circus aeruginosus
+#CC = Circus cyaneus
+#CP = Circus pygargus
   
 CA1 <- circus[c(1:533),1:2]
 CC1 <- circus[c(534:1663),1:2]
